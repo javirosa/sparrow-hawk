@@ -363,11 +363,11 @@ public class GNUIOTest extends Activity {
     		toast("Get Baudrate: " + baudrate);
         	
     		((RXTXPort)this.serialPort).changeOspeed(baudrate/ 2);
-			toast("Set Baudrate: " + baudrate / 2 + " OK ");
+			toast("Set Baudrate: " + baudrate / 4 + " OK ");
     		
 			out.write(new byte[]{(byte) 0x00});
 			out.flush();
-			Thread.sleep(2);
+			Thread.sleep(100);
     		
 
     		((RXTXPort)this.serialPort).changeOspeed(baudrate);

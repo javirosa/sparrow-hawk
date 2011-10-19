@@ -210,18 +210,18 @@ JNIEXPORT void JNICALL Java_gnu_io_RXTXPort_sendBreak
 /*
  * Class:     gnu_io_RXTXPort
  * Method:    changeIspeed
- * Signature: (I)V
+ * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_changeIspeed;
+JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_changeIspeed
   (JNIEnv *, jobject, jint);
 
-  /*
-   * Class:     gnu_io_RXTXPort
-   * Method:    changeOspeed
-   * Signature: (I)V
-   */
-  JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_changeOspeed;
-    (JNIEnv *, jobject, jint);
+/*
+ * Class:     gnu_io_RXTXPort
+ * Method:    changeOspeed
+ * Signature: (I)Z
+*/
+JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_changeOspeed
+(JNIEnv *, jobject, jint);
 
 /*
  * Class:     gnu_io_RXTXPort
@@ -403,7 +403,7 @@ JNIEXPORT jint JNICALL Java_gnu_io_RXTXPort_nativeStaticGetBaudRate
 /*
  * Class:     gnu_io_RXTXPort
  * Method:    nativeStaticSetBaudRate
- * Signature: (Ljava/lang/String;)I
+ * Signature: (Ljava/lang/String;I)Z
  */
 JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_nativeStaticSetBaudRate
   (JNIEnv *, jclass, jstring, jint);

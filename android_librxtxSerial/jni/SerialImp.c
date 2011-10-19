@@ -1944,7 +1944,7 @@ JNIEXPORT jboolean JNICALL RXTXPort(changeIspeed)( JNIEnv *env,
 	//speed_t nativeSpeed = cfgetispeed(&ttyset);
 	//int speed = from_native_speed( env, native_ospeed );
 
-	int cspeed = to_native_speed(speed);
+	int cspeed = to_native_speed(env, speed);
 
 	if( cfsetispeed( &ttyset, cspeed ) < 0 )
 	{
@@ -1996,7 +1996,7 @@ JNIEXPORT jboolean JNICALL RXTXPort(changeOspeed)( JNIEnv *env,
 	//speed_t nativeSpeed = cfgetispeed(&ttyset);
 	//int speed = from_native_speed( env, native_ospeed );
 
-	int cspeed = to_native_speed(speed);
+	int cspeed = to_native_speed(env, speed);
 
 	if( cfsetospeed( &ttyset, cspeed ) < 0 )
 	{
@@ -3087,7 +3087,7 @@ JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_nativeStaticSetBaudRate
 	const char *filename = (*env)->GetStringUTFChars( env, jstr, 0 );
 	int fd = find_preopened_ports( filename );
 	struct termios ttyset;
-	int baudrate;
+	//int baudrate;
 	(*env)->ReleaseStringUTFChars( env, jstr, filename );
 
 	ENTER( "RXTXPort:nativeStaticSetBaudRate()" );
@@ -3103,7 +3103,7 @@ JNIEXPORT jboolean JNICALL Java_gnu_io_RXTXPort_nativeStaticSetBaudRate
 		goto fail;
 	}
 
-	speed_t cspeed = to_native_speed(baudrate);
+	speed_t cspeed = to_native_speed(env, baudrate);
 
 	if( cfsetispeed(&ttyset, cspeed) < 0)
 	{
