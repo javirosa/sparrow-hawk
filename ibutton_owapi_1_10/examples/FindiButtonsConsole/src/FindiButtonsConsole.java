@@ -100,15 +100,19 @@ class FindiButtonsConsole
                         ( OneWireContainer ) ibutton_enum.nextElement();
 
                      System.out.println(
-                        adapter.getAdapterName() + "/" + port_name + "\t"
-                        + ibutton.getName() + "\t"
-                        + ibutton.getAddressAsString() + "\t"
+                        adapter.getAdapterName() + "/" + port_name + "\n\t"
+                        + ibutton.getName() + "\n\t"
+                        + ibutton.getAddressAsString() + "\n\t"
                         + ibutton.getDescription().substring(0, 25) + "...");
+
+                     System.out.println("....................................");
                   }
                   
                   // added 8/29/2001 by SH
                   adapter.endExclusive();
                }
+               
+               System.out.println("::::::::::::::::::::::::::::::::::::");
 
                // free this port 
                adapter.freePort();

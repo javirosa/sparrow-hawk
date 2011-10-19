@@ -62,7 +62,7 @@ public class ListOW
 
          // get the default adapter  
          //DSPortAdapter adapter = OneWireAccessProvider.getDefaultAdapter();
-    	  DSPortAdapter adapter = OneWireAccessProvider.getAdapter("DS9097U", "COM2");
+    	  DSPortAdapter adapter = OneWireAccessProvider.getAdapter("DS9097U", "COM1");
 
          System.out.println();
          System.out.println("Adapter: " + adapter.getAdapterName()
@@ -83,7 +83,7 @@ public class ListOW
          {
             owd = ( OneWireContainer ) owd_enum.nextElement();
 
-            System.out.println(owd.getAddressAsString());
+            System.out.println("iButton: " + owd.getAddressAsString());
          }
 
          // end exclusive use of adapter

@@ -230,6 +230,8 @@ public class USerialAdapter
 
    /** Enable/disable debug messages                   */
    private static boolean doDebugMessages = true;
+   
+   private boolean ignoreVerify = true;
 
    //--------
    //-------- Constructor
@@ -470,7 +472,6 @@ public class USerialAdapter
       }
       finally
       {
-
          // release local exclusive use of port
          endLocalExclusive();
       }
@@ -2626,6 +2627,8 @@ public class USerialAdapter
     */
    private boolean uVerify ()
    {
+	   if(ignoreVerify) return true;
+	   
       try
       {
          serial.flush();

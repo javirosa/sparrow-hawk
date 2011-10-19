@@ -177,7 +177,6 @@ public class DS9097U {
     	try {
 
     		long start, pause1, pause2, stop;
-    		
 
     		//int baudrate = RXTXPort.staticGetBaudRate(SERIAL_PORT);
     		
@@ -188,7 +187,6 @@ public class DS9097U {
         	serialPort.sendBreak(2);
         	//serialPort.sendBreak(2);
 
-    		
         	pause1 = System.currentTimeMillis();
         	
 			Thread.sleep(2);
@@ -281,12 +279,12 @@ public class DS9097U {
 		test.start();
 
 		
-		try {
-			Thread.sleep(60 * 1000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+//		try {
+//			Thread.sleep(60 * 1000);
+//		} catch (InterruptedException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		for(int i = 0; i< 5; i++){
 			test.oneWirePresent();
