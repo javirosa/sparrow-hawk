@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="examples/ADContainerDemo/src"/>
+	<classpathentry kind="src" path="examples/DemoSHAEE/src"/>
+	<classpathentry kind="src" path="examples/DS2408Demo/src"/>
+	<classpathentry kind="src" path="examples/FindiButtonsConsole/src"/>
+	<classpathentry kind="src" path="examples/HumidityTest/src"/>
+	<classpathentry kind="src" path="examples/Hygrochron/src"/>
+	<classpathentry kind="src" path="examples/ListOW/src"/>
+	<classpathentry kind="src" path="examples/OneWireViewer/src"/>
+	<classpathentry kind="src" path="examples/OWDump/src"/>
+	<classpathentry kind="src" path="examples/OWFish/src"/>
+	<classpathentry kind="src" path="examples/OWMemUtil/src"/>
+	<classpathentry kind="src" path="examples/OWNetWatch/src"/>
+	<classpathentry kind="src" path="examples/OWWatch/src"/>
+	<classpathentry kind="src" path="examples/ReadClock/src"/>
+	<classpathentry kind="src" path="examples/ReadDigPot/src"/>
+	<classpathentry kind="src" path="examples/ReadSwitch/src"/>
+	<classpathentry kind="src" path="examples/ReadTemp/src"/>
+	<classpathentry kind="src" path="examples/RemoteAuth/src"/>
+	<classpathentry kind="src" path="examples/SetDefault/src"/>
+	<classpathentry kind="src" path="examples/SHADebitDemo/src"/>
+	<classpathentry kind="src" path="examples/StartNetAdapterHost/src"/>
+	<classpathentry kind="src" path="examples/SwitchDemo/src"/>
+	<classpathentry kind="src" path="examples/TagViewer/src"/>
+	<classpathentry kind="src" path="examples/TemperatureContainerDemo/src"/>
+	<classpathentry kind="src" path="examples/Thermochron/src"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="examples/DS9097U_S09"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

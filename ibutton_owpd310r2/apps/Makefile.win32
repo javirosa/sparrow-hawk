@@ -1,0 +1,90 @@
+#################################################
+#################### ATTENTION ##################
+# 
+# DO NOT USE BLANKS INSIDE FOLDER NAME OR DIRECTORY.
+# THERE MUST BE A TAB BEFORE EACH COMMAND, TRY NOT BE FOOLED BY BLANKS.
+# 
+#################################################
+
+APPNAME = shaapp
+
+#################################################
+
+CC = gcc
+
+CXX = g++
+
+#################################################
+
+CFLAGS := -O2 -g -Wall -fmessage-length=0
+# CFLAGS += -v -mwindows
+# CFLAGS += -mwindows 
+# CFLAGS += -Iinclude
+
+CXXFLAGS := -O2 -g -Wall -fmessage-length=0
+# CXXFLAGS += 
+
+EMPTY = 
+BLANK = $(EMPTY) $(EMPTY)
+
+#################################################
+
+APP_DIR = .
+COMMON_DIR   	= ../../common
+USERIAL_DIR  	= ../../lib/userial/shared
+WIN32IMPL_DIR   = ../../lib/userial/link/Win32
+
+SRCDIR  = $(APP_DIR) $(COMMON_DIR) $(USERIAL_DIR) $(WIN32IMPL_DIR)
+
+# VPATH = $(SRCDIR)
+# vpath %.h $(SRCDIR)
+# vpath %.c $(SRCDIR)
+# GPATH = ./build/dist
+
+APP_SRC = shaapp.c 
+
+SRCS    = $(APP_SRC)
+
+INCFLAG = $(foreach d, $(SRCDIR), $(join -I, $(d)))
+
+HEADS   = $(foreach d, $(SRCDIR), $(wildcard $(d)/*.h))
+
+OBJDIR = ../../build/$(APPNAME)
+
+OBJS = $(foreach f, $(SRCS), $(patsubst %.c, $(OBJDIR)/%.o, $(f)))
+
+LIBS = ../../dist/ibutton_win32.a
+
+DISTDIR = ../../dist
+
+#################################################
+
+TARGET = $(DISTDIR)/$(APPNAME).exe
+
+$(TARGET):	$(OBJS)
+	$(CC) -o $@ $^ $(LIBS)
+#	$(CC) -o $(TARGET) $(OBJS) $(LIBS)
+
+$(OBJDIR)/%.o:  %.c  
+	$(CC) -c $< -o $@ $(INCFLAG)
+
+# $(OBJDIR)/shaapp.o :
+# 	$(CC) -c $(APP_DIR)/shaapp.c        -o $@ $(INCFLAG)
+
+
+#################################################
+
+.PHONY: all clean test
+
+all:	$(TARGET)
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+	
+test:   $(OBJS)
+	@echo TARGET:    	$(TARGET)
+	@echo SRCS:    		$(SRCS)
+	@echo INCFLAG: 		$(INCFLAG)
+	@echo HEADS:  		$(HEADS)
+	@echo OBJS:   		$(OBJS)
+	@echo end

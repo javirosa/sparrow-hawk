@@ -1,0 +1,20 @@
+1. Hardware Ready
+
+2. put librxtxSerial.so into project folder: libs/armeabi/
+
+3. pub librxtxSerial.jar & net.sh.android.ibutton.jar into project foler: lib/
+
+4. put gnu.io.rxtx.properties into android system: /system/etc/
+   Or, you will get Warning: serial communications API not setup properly, no ports in enumeration...
+   
+5. chmod 666 /dev/s3c_serial1, chmod 666 /dev/s3c_serial2, chmod 666 /dev/s3c_serial3
+   Or, you will get Error: testRead() open failed
+
+6. Give write permission also to /data/local/tmp folder
+   Or, you will get: RXTX fhs_lock() Error: creating lock file: /data/local/tmp/LCK..s3c_serial1: Permission denied
+
+   
+   
+
+   
+   Port found "/dev/s3c_serial1" but Adapter "DS9097U" not detected.

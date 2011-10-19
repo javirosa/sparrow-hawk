@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<resources>
+    <string name="app_name">GnuIOTest</string>
+    
+    <drawable name="ind_on">#90E070</drawable>
+    <drawable name="ind_off">#404040</drawable>
+	
+	<style name="Ind">
+		<item name="android:textSize">18dp</item>	
+		<item name="android:textColor">#222</item>	
+		<item name="android:gravity">center</item>	
+	</style>	
+	
+	<string name="Button_SerialOpen">Open Serial Port</string>	
+	<string name="Button_SerialClose">Close Serial Port</string>	
+	<string name="Button_SerialSend">Send</string>	
+	<string name="Button_Clear">Clear</string>
+	
+</resources>

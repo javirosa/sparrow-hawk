@@ -1,0 +1,163 @@
+#################################################
+#################### ATTENTION ##################
+#
+# DO NOT USE BLANKS INSIDE FOLDER NAME OR DIRECTORY.
+# THERE MUST BE A TAB BEFORE EACH COMMAND, TRY NOT BE FOOLED BY BLANKS.
+#
+#################################################
+
+
+#################################################
+
+#CC = gcc
+
+#CXX = g++
+
+#################################################
+
+CFLAGS := -O2 -g -Wall -fmessage-length=0
+# CFLAGS += -v -mwindows
+# CFLAGS += -mwindows
+# CFLAGS += -Iinclude
+
+CXXFLAGS := -O2 -g -Wall -fmessage-length=0
+# CXXFLAGS +=
+
+EMPTY =
+BLANK = $(EMPTY) $(EMPTY)
+
+#################################################
+
+COMMON_DIR   	= ./common
+USERIAL_DIR  	= ./lib/userial/shared
+WIN32IMPL_DIR   = ./lib/userial/link/Win32
+LINUXIMPL_DIR   = ./lib/userial/link/Linux
+
+#SRCDIR = $(COMMON_DIR) $(USERIAL_DIR) $(WIN32IMPL_DIR)
+SRCDIR = $(COMMON_DIR) $(USERIAL_DIR) $(LINUXIMPL_DIR)
+
+# VPATH = $(SRCDIR)
+# vpath %.h $(SRCDIR)
+# vpath %.c $(SRCDIR)
+# GPATH = ./build/dist
+
+COMMON_SRC      = crcutil.c ioutil.c owerr.c ibsha33o.c
+USERIAL_SRC     = ds2480ut.c owllu.c ownetu.c owsesu.c owtrnu.c
+WIN32IMPL_SRC   = win32lnk.c
+LINUXIMPL_SRC   = linuxlnk.c
+
+SRCS = $(COMMON_SRC) $(USERIAL_SRC) $(WIN32IMPL_SRC) $(LINUXIMPL_SRC) $(APP_SRC)
+
+INCFLAG = $(foreach d, $(SRCDIR), $(join -I, $(d)))
+
+HEADS = $(foreach d, $(SRCDIR), $(wildcard $(d)/*.h))
+
+OBJDIR = ./build
+
+DISTDIR = ./dist
+
+COMMON_OBJDIR    =  $(OBJDIR)/common
+USERIAL_OBJDIR   =  $(OBJDIR)/userial
+WIN32IMPL_OBJDIR =  $(OBJDIR)/win32impl
+LINUXIMPL_OBJDIR =  $(OBJDIR)/linuximpl
+
+COMMON_OBJ       =  $(foreach f, $(COMMON_SRC),  $(patsubst %.c, $(COMMON_OBJDIR)/%.o, $(f)))
+USERIAL_OBJ      =  $(foreach f, $(USERIAL_SRC), $(patsubst %.c, $(USERIAL_OBJDIR)/%.o, $(f)))
+WIN32IMPL_OBJ    =  $(foreach f, $(WIN32IMPL_SRC),  $(patsubst %.c, $(WIN32IMPL_OBJDIR)/%.o, $(f)))
+LINUXIMPL_OBJ    =  $(foreach f, $(LINUXIMPL_SRC),  $(patsubst %.c, $(LINUXIMPL_OBJDIR)/%.o, $(f)))
+
+WIN32_OBJS = $(COMMON_OBJ) $(USERIAL_OBJ) $(WIN32IMPL_OBJ)
+LINUX_OBJS = $(COMMON_OBJ) $(USERIAL_OBJ) $(LINUXIMPL_OBJ)
+
+OBJS = $(LINUX_OBJS)
+#OBJS = $(WIN32_OBJS)
+
+LIBS =
+
+#################################################
+
+
+IBUTTON_WIN32LIB = $(DISTDIR)/ibutton_win32.a
+IBUTTON_LINUXLIB = $(DISTDIR)/ibutton_linux.a
+
+#TARGET =  $(IBUTTON_WIN32LIB)
+TARGET =  $(IBUTTON_LINUXLIB)
+
+#$(IBUTTON_WIN32LIB): $(WIN32_OBJS)
+#	$(AR) cqv  $@  $(WIN32_OBJS)
+
+$(IBUTTON_LINUXLIB): $(LINUX_OBJS)
+	$(AR) cqv  $@  $(LINUX_OBJS)
+
+
+# $(COMMON_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(COMMON_DIR)/$<     -o $@ $(INCFLAG)
+#
+# $(USERIAL_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(USERIAL_DIR)/$<    -o $@ $(INCFLAG)
+#
+# $(WIN32IMPL_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(WIN32IMPL_DIR)/$<  -o $@ $(INCFLAG)
+
+
+# $(OBJDIR)/ioutil.o:
+# ifeq ($(findstring ioutil.c, $(COMMON_SRC)), ioutil.c)
+# 	$(CC) -c $(COMMON_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(USERIAL_SRC)),ioutil.c)
+# 	$(CC) -c $(USERIAL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(WIN32IMPL_SRC)), ioutil.c)
+# 	$(CC) -c $(WIN32IMPL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(APP_SRC)), ioutil.c)
+# 	$(CC) -c $(APP_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+
+
+# $(OBJDIR)/%.o:  %.c  $(HEADS)
+#	$(CC) -c $< -o $@ $(INCFLAG)
+
+
+$(COMMON_OBJDIR)/crcutil.o :
+	$(CC) -c $(COMMON_DIR)/crcutil.c  	-o $@ $(INCFLAG)
+$(COMMON_OBJDIR)/ioutil.o :
+	$(CC) -c $(COMMON_DIR)/ioutil.c  	-o $@ $(INCFLAG)
+$(COMMON_OBJDIR)/owerr.o :
+	$(CC) -c $(COMMON_DIR)/owerr.c  	-o $@ $(INCFLAG)
+$(COMMON_OBJDIR)/ibsha33o.o :
+	$(CC) -c $(COMMON_DIR)/ibsha33o.c 	-o $@ $(INCFLAG)
+
+$(USERIAL_OBJDIR)/ds2480ut.o :
+	$(CC) -c $(USERIAL_DIR)/ds2480ut.c      -o $@ $(INCFLAG)
+$(USERIAL_OBJDIR)/owllu.o :
+	$(CC) -c $(USERIAL_DIR)/owllu.c  	-o $@ $(INCFLAG)
+$(USERIAL_OBJDIR)/ownetu.o :
+	$(CC) -c $(USERIAL_DIR)/ownetu.c  	-o $@ $(INCFLAG)
+$(USERIAL_OBJDIR)/owsesu.o :
+	$(CC) -c $(USERIAL_DIR)/owsesu.c  	-o $@ $(INCFLAG)
+$(USERIAL_OBJDIR)/owtrnu.o :
+	$(CC) -c $(USERIAL_DIR)/owtrnu.c  	-o $@ $(INCFLAG)
+
+$(WIN32IMPL_OBJDIR)/win32lnk.o :
+	$(CC) -c $(WIN32IMPL_DIR)/win32lnk.c  	-o $@ $(INCFLAG)
+
+$(LINUXIMPL_OBJDIR)/linuxlnk.o :
+	$(CC) -c $(LINUXIMPL_DIR)/linuxlnk.c  	-o $@ $(INCFLAG)
+
+#################################################
+
+.PHONY: all clean test
+
+all:  $(TARGET)
+
+clean:
+	rm -f  $(OBJS) $(TARGET)
+
+test:
+	@echo TARGET:    	$(TARGET)
+	@echo SRCS:    		$(SRCS)
+	@echo INCFLAG: 		$(INCFLAG)
+	@echo HEADS:  		$(HEADS)
+	@echo OBJS:   		$(OBJS)
+	@echo end

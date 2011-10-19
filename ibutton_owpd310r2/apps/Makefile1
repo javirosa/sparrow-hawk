@@ -1,0 +1,155 @@
+#################################################
+#################### ATTENTION ##################
+# 
+# DO NOT USE BLANKS INSIDE FOLDER NAME OR DIRECTORY.
+# THERE MUST BE A TAB BEFORE EACH COMMAND, TRY NOT BE FOOLED BY BLANKS.
+# 
+#################################################
+
+APPNAME = shaapp
+
+#################################################
+
+CC = gcc
+
+CXX = g++
+
+#################################################
+
+CFLAGS := -O2 -g -Wall -fmessage-length=0
+# CFLAGS += -v -mwindows
+# CFLAGS += -mwindows 
+# CFLAGS += -Iinclude
+
+CXXFLAGS := -O2 -g -Wall -fmessage-length=0
+# CXXFLAGS += 
+
+EMPTY = 
+BLANK = $(EMPTY) $(EMPTY)
+
+#################################################
+
+
+COMMON_DIR   = ../../common
+USERIAL_DIR  = ../../lib/userial/shared
+USIMPL_DIR   = ../../lib/userial/link/Win32
+APP_DIR      = .
+
+SRCDIR = $(COMMON_DIR) $(USERIAL_DIR) $(USIMPL_DIR) $(APP_DIR)
+
+# VPATH = $(SRCDIR)
+# vpath %.h $(SRCDIR)
+# vpath %.c $(SRCDIR)
+# GPATH = ./build/dist
+
+COMMON_SRC   = crcutil.c ioutil.c owerr.c ibsha33o.c
+USERIAL_SRC  = ds2480ut.c owllu.c ownetu.c owsesu.c owtrnu.c 
+USIMPL_SRC   = win32lnk.c
+APP_SRC      = shaapp.c 
+
+SRCS = $(COMMON_SRC) $(USERIAL_SRC) $(USIMPL_SRC) $(APP_SRC)
+
+INCFLAG = $(foreach d, $(SRCDIR), $(join -I, $(d)))
+
+HEADS = $(foreach d, $(SRCDIR), $(wildcard $(d)/*.h))
+
+OBJDIR = ./build
+#OBJDIR = ../../build/$(APPNAME)
+
+COMMON_OBJDIR    =  $(OBJDIR)/common
+USERIAL_OBJDIR   =  $(OBJDIR)/userial
+USIMPL_OBJDIR    =  $(OBJDIR)/usimpl
+APP_OBJDIR       =  $(OBJDIR)/app
+
+COMMON_OBJ   =  $(foreach f, $(COMMON_SRC),  $(patsubst %.c, $(COMMON_OBJDIR)/%.o, $(f)))
+USERIAL_OBJ  =  $(foreach f, $(USERIAL_SRC), $(patsubst %.c, $(USERIAL_OBJDIR)/%.o, $(f)))
+USIMPL_OBJ   =  $(foreach f, $(USIMPL_SRC),  $(patsubst %.c, $(USIMPL_OBJDIR)/%.o, $(f)))
+APP_OBJ      =  $(foreach f, $(APP_SRC),     $(patsubst %.c, $(APP_OBJDIR)/%.o, $(f)))
+
+OBJS = $(foreach f, $(SRCS), $(patsubst %.c, $(OBJDIR)/%.o, $(f)))
+# OBJS = $(COMMON_OBJ) $(USERIAL_OBJ) $(USIMPL_OBJ) $(APP_OBJ)
+
+LIBS =
+
+#################################################
+
+TARGET = $(OBJDIR)/$(APPNAME).exe
+
+$(TARGET):	$(OBJS)
+	$(CC) -o $@ $^ $(LIBS)
+#	$(CC) -o $(TARGET) $(OBJS) $(LIBS)
+
+
+# $(COMMON_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(COMMON_DIR)/$<   -o $@ $(INCFLAG)
+# 	
+# $(USERIAL_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(USERIAL_DIR)/$<  -o $@ $(INCFLAG)
+# 	
+# $(USIMPL_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(USIMPL_DIR)/$<   -o $@ $(INCFLAG)
+# 	
+# $(APP_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(APP_DIR)/$<  	  -o $@ $(INCFLAG)
+    
+# $(OBJDIR)/ioutil.o:
+# ifeq ($(findstring ioutil.c, $(COMMON_SRC)), ioutil.c)
+# 	$(CC) -c $(COMMON_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(USERIAL_SRC)),ioutil.c)
+# 	$(CC) -c $(USERIAL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(USIMPL_SRC)), ioutil.c)
+# 	$(CC) -c $(USIMPL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif
+# ifeq ($(findstring ioutil.c, $(APP_SRC)), ioutil.c)
+# 	$(CC) -c $(APP_DIR)/ioutil.c -o $@ $(INCFLAG)
+# endif 
+
+
+# $(OBJDIR)/%.o:  %.c  $(HEADS)
+#	$(CC) -c $< -o $@ $(INCFLAG)
+
+$(OBJDIR)/shaapp.o :
+	$(CC) -c $(APP_DIR)/shaapp.c        -o $@ $(INCFLAG)
+
+$(OBJDIR)/ds2480ut.o : 
+	$(CC) -c $(USERIAL_DIR)/ds2480ut.c  -o $@ $(INCFLAG)
+$(OBJDIR)/owllu.o :
+	$(CC) -c $(USERIAL_DIR)/owllu.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/ownetu.o :
+	$(CC) -c $(USERIAL_DIR)/ownetu.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/owsesu.o :
+	$(CC) -c $(USERIAL_DIR)/owsesu.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/owtrnu.o :
+	$(CC) -c $(USERIAL_DIR)/owtrnu.c  	-o $@ $(INCFLAG)
+
+$(OBJDIR)/win32lnk.o :
+	$(CC) -c $(USIMPL_DIR)/win32lnk.c  	-o $@ $(INCFLAG)
+
+$(OBJDIR)/crcutil.o :
+	$(CC) -c $(COMMON_DIR)/crcutil.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/ioutil.o :
+	$(CC) -c $(COMMON_DIR)/ioutil.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/owerr.o :
+	$(CC) -c $(COMMON_DIR)/owerr.c  	-o $@ $(INCFLAG)
+$(OBJDIR)/ibsha33o.o :
+	$(CC) -c $(COMMON_DIR)/ibsha33o.c 	-o $@ $(INCFLAG)
+	
+
+#################################################
+
+.PHONY: all clean test
+
+all:	$(TARGET)
+
+clean:
+	rm -f $(OBJS) $(TARGET)
+	
+test:   $(OBJS)
+	@echo TARGET:    	$(TARGET)
+	@echo SRCS:    		$(SRCS)
+	@echo INCFLAG: 		$(INCFLAG)
+	@echo HEADS:  		$(HEADS)
+	@echo OBJS:   		$(OBJS)
+	@echo end

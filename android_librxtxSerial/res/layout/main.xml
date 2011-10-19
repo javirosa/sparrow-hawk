@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:orientation="vertical" android:layout_width="fill_parent"
+	android:layout_height="fill_parent" android:weightSum="1">
+	
+	<LinearLayout android:id="@+id/mainLayout"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"></LinearLayout>
+		
+	<LinearLayout android:id="@+id/IndContainer"
+		android:layout_width="fill_parent" android:orientation="horizontal"
+		android:layout_height="wrap_content">
+	</LinearLayout>
+	
+	<LinearLayout android:layout_width="fill_parent"
+		android:layout_height="wrap_content" android:orientation="horizontal"
+		android:id="@+id/SendContainer" android:weightSum="1">
+		<EditText android:layout_height="fill_parent"
+			android:id="@+id/txtSendData" android:layout_weight="1.26" android:layout_width="fill_parent">
+		</EditText>
+		<Button android:layout_height="wrap_content"
+			android:id="@+id/btnSerialSend"
+			android:text="@string/Button_SerialSend" android:layout_width="wrap_content">
+		</Button>
+	</LinearLayout>
+
+	<LinearLayout android:id="@+id/OpenCloseLayout"
+		android:layout_width="wrap_content" android:layout_height="wrap_content">
+
+		<Button android:id="@+id/btnSerialOpen"
+			android:layout_height="wrap_content" android:text="@string/Button_SerialOpen" android:layout_width="wrap_content"></Button>
+		<Button android:id="@+id/btnSerialClose"
+			android:layout_height="wrap_content" android:text="@string/Button_SerialClose" android:layout_width="wrap_content"></Button>
+		<Button android:id="@+id/btnClear" android:layout_height="wrap_content" android:text="@string/Button_Clear" android:layout_width="fill_parent"></Button>
+
+	</LinearLayout>
+	
+	
+	
+	<TextView android:layout_width="fill_parent" android:text="RECV: " android:id="@+id/lblIndication" android:layout_height="62dp" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_weight="0.46"></TextView>
+
+</LinearLayout>

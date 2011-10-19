@@ -1,0 +1,41 @@
+
+
+CXXFLAGS := -O2 -g -Wall -fmessage-length=0
+# CXXFLAGS += -v -mwindows
+# CXXFLAGS += -mwindows $< -Iinclude
+
+
+VPATH = ./common:./lib/userial/shared:./lib/userial/link/Win32
+# vpath %.h ./common ./lib/userial/shared
+# vpath %.c ./common ./lib/userial/shared ./lib/userial/link/Win32
+# GPATH = ./build/dist
+
+OBJDIR = ./build/obj
+
+# SRCS = $(wildcard *.c)
+
+SRCS = ds2480ut.c, owllu.c, ownetu.c, owsesu.c, owtrnu.c, \
+	win32lnk.c, crcutil,c, ioutil.c, owerr.c, ibsha33o.c
+
+OBJS = $(patsubst %.c,$(OBJDIR)/%.o,$(SRCS))
+
+# OBJS = ds2480ut.o, owllu.o, ownetu.o, owsesu.o, owtrnu.o, \
+# 	win32lnk.o, crcutil,o, ioutil.o, owerr.o, ibsha33o.o
+   
+
+
+LIBS =
+
+TARGET = shaapp.exe
+
+$(TARGET):	$(OBJS)
+	$(CXX) -o $(TARGET) $(OBJS) $(LIBS)
+
+
+
+.PHONY: clean all
+
+all:	$(TARGET)
+
+clean:
+	rm -f $(OBJS) $(TARGET)
