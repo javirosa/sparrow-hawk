@@ -230,6 +230,8 @@ public class USerialAdapter
 
    /** Enable/disable debug messages                   */
    private static boolean doDebugMessages = false;
+   
+   private boolean ignoreVerify = true;
 
    //--------
    //-------- Constructor
@@ -2626,6 +2628,8 @@ public class USerialAdapter
     */
    private boolean uVerify ()
    {
+	   if(ignoreVerify) return true;
+	   
       try
       {
          serial.flush();

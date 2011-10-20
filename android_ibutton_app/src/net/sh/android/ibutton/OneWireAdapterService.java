@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 
 import com.dalsemi.onewire.OneWireAccessProvider;
+import com.dalsemi.onewire.OneWireException;
 import com.dalsemi.onewire.adapter.DSPortAdapter;
 import com.dalsemi.onewire.container.OneWireContainer;
 
@@ -20,6 +21,8 @@ public class OneWireAdapterService {
 	
 	private DSPortAdapter adapter;
 	
+	private boolean isStarted;
+	
 	public OneWireAdapterService(String adapterName, String portName){
 		
 		this.adapterName = adapterName;
@@ -33,10 +36,14 @@ public class OneWireAdapterService {
 		
 	}
 	
-	public List<String> searchAllIButtons() {
-
+	public boolean isStarted(){
+		return isStarted;
+	}
+	
+	
+	public void start(){
 		
-		List<String> ret = new ArrayList<String>();
+		if(isStarted) return;
 		
 		if(adapter == null){
 
@@ -49,6 +56,34 @@ public class OneWireAdapterService {
 				Trace(e.toString());
 			}
 		}
+		
+		if (adapter == null){
+			Trace("No 1-Wire adapter on the system!");
+		}else{
+			isStarted = true;
+		}
+	}
+	
+	public void stop(){
+		
+		if(isStarted) {
+
+			try {
+				adapter.freePort();
+			} catch (OneWireException e) {
+				Trace(e.toString());
+			}
+			
+			adapter = null;
+			
+			isStarted = false;
+		}
+		
+	}
+	
+	public List<String> searchAllIButtons() {
+
+		List<String> ret = new ArrayList<String>();
 		
 		if (adapter == null){
 			Trace("No 1-Wire adapter on the system!");

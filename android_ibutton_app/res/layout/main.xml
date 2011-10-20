@@ -8,5 +8,9 @@
     android:layout_width="fill_parent" 
     android:layout_height="wrap_content" 
     android:layout_weight="0.18" android:text="@string/hello" android:id="@+id/txtInfo"/>
-<Button android:layout_width="wrap_content" android:layout_height="wrap_content" android:id="@+id/btnGetAddress" android:text="Button"></Button>
+<LinearLayout android:id="@+id/linearLayout1" android:layout_width="fill_parent" android:layout_height="wrap_content" android:weightSum="1">
+    <Button android:layout_width="149dp" android:layout_height="wrap_content" android:id="@+id/btnSerialOpen" android:text="@string/btnSerialOpen" android:layout_weight="0.06"></Button>
+    <Button android:layout_height="wrap_content" android:id="@+id/btnSerialClose" android:text="@string/btnSerialClose" android:layout_width="wrap_content" android:layout_weight="0.44"></Button>
+</LinearLayout>
+<Button android:id="@+id/btnGetAddress" android:text="@string/btnGetAddress" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
 </LinearLayout>

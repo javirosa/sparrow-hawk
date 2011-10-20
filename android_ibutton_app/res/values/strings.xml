@@ -2,4 +2,7 @@
 <resources>
     <string name="hello">Hello World, Android_ibutton_appActivity!</string>
     <string name="app_name">Android_ibutton_app</string>
+    <string name="btnGetAddress">Get iButtons Address</string>
+    <string name="btnSerialOpen">Open Serial Port</string>
+    <string name="btnSerialClose">Close Serial Port</string>
 </resources>

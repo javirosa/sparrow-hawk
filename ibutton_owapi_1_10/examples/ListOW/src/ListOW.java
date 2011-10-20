@@ -62,7 +62,7 @@ public class ListOW
 
          // get the default adapter  
          //DSPortAdapter adapter = OneWireAccessProvider.getDefaultAdapter();
-    	  DSPortAdapter adapter = OneWireAccessProvider.getAdapter("DS9097U", "COM1");
+    	  DSPortAdapter adapter = OneWireAccessProvider.getAdapter("DS9097U", "COM2");
 
          System.out.println();
          System.out.println("Adapter: " + adapter.getAdapterName()

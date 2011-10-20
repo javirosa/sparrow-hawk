@@ -232,6 +232,7 @@ public class USerialAdapter
    private static boolean doDebugMessages = true;
    
    private boolean ignoreVerify = true;
+   private boolean ignoreSearch = true;
 
    //--------
    //-------- Constructor
@@ -2245,6 +2246,8 @@ public class USerialAdapter
    private boolean search (OneWireState mState)
       throws OneWireIOException, OneWireException
    {
+	   //if(ignoreSearch) return false;
+	   
       int reset_offset = 0;
 
       // make sure adapter is present
