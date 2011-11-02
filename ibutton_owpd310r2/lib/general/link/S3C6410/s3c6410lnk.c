@@ -38,6 +38,18 @@
 
 #include "ownet.h"
 
+#include <linux/init.h>
+#include <linux/module.h>
+#include <linux/platform_device.h>
+#include <linux/gpio.h>
+#include <linux/w1-gpio.h>
+
+#include <linux/delay.h>
+
+#include <asm/gpio.h>
+
+//typedef unsigned int PIN;
+
 // exportable link-level functions
 SMALLINT owTouchReset(int);
 SMALLINT owTouchBit(int,SMALLINT);
@@ -50,6 +62,218 @@ SMALLINT owProgramPulse(int);
 void msDelay(int);
 long msGettick(void);
 
+
+static SMALLINT SystemTick = 0;
+
+//index: 1-Wire Port No.
+//value: GPIO PIN No.
+static unsigned int IOTable[MAX_PORTNUM];
+
+//--------------------------------------------------------------------------
+// 1-Wire Master Timing (APN126)
+// Recommended (by us)
+
+#define STANDARD_TIMING_A   6
+#define STANDARD_TIMING_B   64
+#define STANDARD_TIMING_C   60
+#define STANDARD_TIMING_D   10
+#define STANDARD_TIMING_E   9
+#define STANDARD_TIMING_F   55
+#define STANDARD_TIMING_G   0
+#define STANDARD_TIMING_H   480
+#define STANDARD_TIMING_I   70
+#define STANDARD_TIMING_J   410
+
+#define OVERDRIVE_TIMING_A   1.0
+#define OVERDRIVE_TIMING_B   7.5
+#define OVERDRIVE_TIMING_C   7.5
+#define OVERDRIVE_TIMING_D   2.5
+#define OVERDRIVE_TIMING_E   1.0
+#define OVERDRIVE_TIMING_F   7
+#define OVERDRIVE_TIMING_G   2.5
+#define OVERDRIVE_TIMING_H   70
+#define OVERDRIVE_TIMING_I   8.5
+#define OVERDRIVE_TIMING_J   40
+
+// Ticks for standard drive ( in 1/4 us )
+#define STANDARD_TICKS_A       	((int)(STANDARD_TIMING_A * 4))
+#define STANDARD_TICKS_B       	((int)(STANDARD_TIMING_B * 4))
+#define STANDARD_TICKS_C       	((int)(STANDARD_TIMING_C * 4))
+#define STANDARD_TICKS_D       	((int)(STANDARD_TIMING_D * 4))
+#define STANDARD_TICKS_E       	((int)(STANDARD_TIMING_E * 4))
+#define STANDARD_TICKS_F       	((int)(STANDARD_TIMING_F * 4))
+#define STANDARD_TICKS_G       	((int)(STANDARD_TIMING_G * 4))
+#define STANDARD_TICKS_H       	((int)(STANDARD_TIMING_H * 4))
+#define STANDARD_TICKS_I       	((int)(STANDARD_TIMING_I * 4))
+#define STANDARD_TICKS_J       	((int)(STANDARD_TIMING_J * 4))
+
+// Ticks for over drive ( in 1/4 us )
+#define OVERDRIVE_TICKS_A   	((int)(OVERDRIVE_TIMING_A * 4))
+#define OVERDRIVE_TICKS_B       ((int)(OVERDRIVE_TIMING_B * 4))
+#define OVERDRIVE_TICKS_C       ((int)(OVERDRIVE_TIMING_C * 4))
+#define OVERDRIVE_TICKS_D       ((int)(OVERDRIVE_TIMING_D * 4))
+#define OVERDRIVE_TICKS_E       ((int)(OVERDRIVE_TIMING_E * 4))
+#define OVERDRIVE_TICKS_F       ((int)(OVERDRIVE_TIMING_F * 4))
+#define OVERDRIVE_TICKS_G       ((int)(OVERDRIVE_TIMING_G * 4))
+#define OVERDRIVE_TICKS_H       ((int)(OVERDRIVE_TIMING_H * 4))
+#define OVERDRIVE_TICKS_I       ((int)(OVERDRIVE_TIMING_I * 4))
+#define OVERDRIVE_TICKS_J       ((int)(OVERDRIVE_TIMING_J * 4))
+
+// Global variable for timing
+static SMALLINT  A = STANDARD_TICKS_A;
+static SMALLINT  B = STANDARD_TICKS_B;
+static SMALLINT  C = STANDARD_TICKS_C;
+static SMALLINT  D = STANDARD_TICKS_D;
+static SMALLINT  E = STANDARD_TICKS_E;
+static SMALLINT  F = STANDARD_TICKS_F;
+static SMALLINT  G = STANDARD_TICKS_G;
+static SMALLINT  H = STANDARD_TICKS_H;
+static SMALLINT  I = STANDARD_TICKS_I;
+static SMALLINT  J = STANDARD_TICKS_J;
+
+
+//--------------------------------------------------------------------------
+// Some useful macro definitions
+//
+#define bus_init(pin)		{ gpio_direction_input(pin); }
+#define bus_low(pin)		{ gpio_direction_output(pin, 0); }
+#define bus_release(pin)  	{ gpio_direction_input(pin); }
+#define bus_sample(pin)   	{ gpio_get_value(pin) ? 1 : 0; }
+
+//--------------------------------------------------------------------------
+// Pause for exactly 'tick' number of ticks = 0.25us
+// Bad news:  Refer to arch/arm/lib/delay.S, use Assembly code
+// Good news: No need to implement this method directly, because all the usage will be times of 4 ticks
+//
+static void tickDelay(int ticks)
+{
+	//4 ticks = 1 us
+	int usec = ticks / 4;
+	udelay(usec);
+}
+
+//--------------------------------------------------------------------------
+// Write one bit to the very GPIO PIN
+// Write High: Release Bus
+// Write Low:  Drive Low
+//
+static void w1_gpio_write_bit(unsigned int pin, SMALLINT bit)
+{
+	if (bit)
+		gpio_direction_input(pin);
+	else
+		gpio_direction_output(pin, 0);
+}
+
+//--------------------------------------------------------------------------
+// Write one bit from the very GPIO PIN
+//
+static SMALLINT w1_gpio_read_bit(unsigned int pin)
+{
+	return gpio_get_value(pin) ? 1 : 0;
+}
+
+
+/// Initialize the IO pin for iButtons
+/// Must executed before other owXXX functions and called only once!
+void OWInit(unsigned int * ioTable, int count)
+{
+	int num = ( count > MAX_PORTNUM ) ? MAX_PORTNUM : count;
+
+	if ( ioTable )
+	{
+		int i ;
+		for ( i = 0 ; i< num; i++ )
+		{
+			IOTable[i] = ioTable[i];
+		}
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Send a 1-Wire write bit. Provide 10us recovery time.
+//
+void OWWriteBit(int portnum, SMALLINT bit)
+{
+	if (bit)
+	{
+		// Write '1' bit
+		//outp(PORTADDRESS,0x00); // Drives DQ low
+		bus_low( IOTable(portnum) );
+		tickDelay(A);
+
+		//outp(PORTADDRESS,0x01); // Releases the bus
+		bus_release( IOTable(portnum) );
+		tickDelay(B); // Complete the time slot and 10us recovery
+	}
+	else
+	{
+		// Write '0' bit
+		//outp(PORTADDRESS,0x00); // Drives DQ low
+		bus_low( IOTable(portnum) );
+		tickDelay(C);
+
+		//outp(PORTADDRESS,0x01); // Releases the bus
+		bus_release( IOTable(portnum) );
+		tickDelay(D);
+	}
+}
+
+//-----------------------------------------------------------------------------
+// Read a bit from the 1-Wire bus and return it. Provide 10us recovery time.
+//
+SMALLINT OWReadBit(int portnum)
+{
+	SMALLINT result;
+
+	//outp(PORTADDRESS,0x00); // Drives DQ low
+	bus_low( IOTable(portnum) );
+	tickDelay(A);
+
+	//outp(PORTADDRESS,0x01); // Releases the bus
+	bus_release( IOTable(portnum) );
+	tickDelay(E);
+
+	//result = inp(PORTADDRESS) & 0x01; // Sample the bit value from the slave
+	result = bus_sample( IOTable(portnum) );
+	tickDelay(F); // Complete the time slot and 10us recovery
+
+	return result;
+}
+
+
+//-----------------------------------------------------------------------------
+// Write 1-Wire data byte
+//
+void OWWriteByte(int data)
+{
+	int loop;
+	// Loop to write each bit in the byte, LS-bit first
+	for (loop = 0; loop < 8; loop++)
+	{
+		OWWriteBit(data & 0x01);
+		// shift the data byte for the next bit
+		data >>= 1;
+	}
+}
+//-----------------------------------------------------------------------------
+// Read 1-Wire data byte and return it
+//
+int OWReadByte(void)
+{
+	int loop, result=0;
+	for (loop = 0; loop < 8; loop++)
+	{
+		// shift the result to get it ready for the next bit
+		result >>= 1;
+		// if result is one, then set MS bit
+		if (OWReadBit())
+				result |= 0x80;
+	}
+	return result;
+}
+
+
 //--------------------------------------------------------------------------
 // Reset all of the devices on the 1-Wire Net and return the result.
 //
@@ -61,8 +285,24 @@ long msGettick(void);
 //
 SMALLINT owTouchReset(int portnum)
 {
-   // add platform specific code here
-   return 0;
+	SMALLINT bit;
+
+	tickDelay(G);
+
+	//outp(PORTADDRESS,0x00); // Drives DQ low
+	bus_low( IOTable[portnum] );
+	tickDelay(H);
+
+	//outp(PORTADDRESS,0x01); // Releases the bus
+	bus_release( IOTable[portnum] );
+	tickDelay(I);
+
+	//result = inp(PORTADDRESS) ^ 0x01; // Sample for presence pulse from slave
+	bit = bus_sample( IOTable[portnum] );
+	tickDelay(J); // Complete the reset sequence recovery
+
+	///Bit = 0 means device present, Bit =1 meand no devie
+	return ( bit == 0 ); // Return sample presence pulse result
 }
 
 //--------------------------------------------------------------------------
@@ -80,8 +320,18 @@ SMALLINT owTouchReset(int portnum)
 //
 SMALLINT owTouchBit(int portnum, SMALLINT sendbit)
 {
-   // add platform specific code here
-   return 0;
+	SMALLINT bit = sendbit;
+
+	if ( bit == 1 )
+	{
+		bit = OWReadBit( portnum );
+	}
+	else
+	{   ///Send 0, don't care about the sample result;
+		OWWriteBit( portnum, bit );
+	}
+
+	return bit;
 }
 
 //--------------------------------------------------------------------------
@@ -98,8 +348,25 @@ SMALLINT owTouchBit(int portnum, SMALLINT sendbit)
 //
 SMALLINT owTouchByte(int portnum, SMALLINT sendbyte)
 {
-   // add platform specific code here
-   return 0;
+	int loop;
+	int result = 0;
+	SMALLINT data = sendByte;
+	for (loop = 0; loop < 8; loop++)
+	{
+		// shift the result to get it ready for the next bit
+		result >>= 1;
+		// If sending a '1' then read a bit else write a '0'
+		if (data & 0x01)
+		{
+			if (OWReadBit(portnum))
+				result |= 0x80;
+		}
+		else
+			OWWriteBit(portnum, 0);
+		// shift the data byte for the next bit
+		data >>= 1;
+	}
+	return result;
 }
 
 //--------------------------------------------------------------------------
@@ -146,8 +413,36 @@ SMALLINT owReadByte(int portnum)
 //
 SMALLINT owSpeed(int portnum, SMALLINT new_speed)
 {
-   // add platform specific code here
-   return 0;
+	// Adjust tick values depending on speed, see AN126
+	if (new_speed == 0x00)
+	{
+		// Standard Speed, timing by tick
+		A = 6 * 4;
+		B = 64 * 4;
+		C = 60 * 4;
+		D = 10 * 4;
+		E = 9 * 4;
+		F = 55 * 4;
+		G = 0;
+		H = 480 * 4;
+		I = 70 * 4;
+		J = 410 * 4;
+	}
+	else
+	{
+		// Overdrive Speed, timing by tick
+		A = 1.5 * 4;
+		B = 7.5 * 4;
+		C = 7.5 * 4;
+		D = 2.5 * 4;
+		E = 0.75 * 4;
+		F = 7 * 4;
+		G = 2.5 * 4;
+		H = 70 * 4;
+		I = 8.5 * 4;
+		J = 40 * 4;
+	}
+	return new_speed;
 }
 
 //--------------------------------------------------------------------------
@@ -166,8 +461,22 @@ SMALLINT owSpeed(int portnum, SMALLINT new_speed)
 //
 SMALLINT owLevel(int portnum, SMALLINT new_level)
 {
-   // add platform specific code here
-   return 0;
+	SMALLINT result = 0;
+
+	switch ( new_level )
+	{
+		case MODE_STRONG5:
+		case MODE_NORMAL:
+			{
+				result = new_level;
+			}
+			break;
+
+		default:
+			break;
+	}
+
+   return result;
 }
 
 //--------------------------------------------------------------------------
@@ -192,7 +501,7 @@ SMALLINT owProgramPulse(int portnum)
 //
 void msDelay(int len)
 {
-   // add platform specific code here
+	mdelay(len);
 }
 
 //--------------------------------------------------------------------------
@@ -201,8 +510,10 @@ void msDelay(int len)
 //
 long msGettick(void)
 {
-   // add platform specific code here
-   return 0;
+	// not fully supported yet
+	// returns timer 1, which is in 8-bit auto-reload (presumably)
+	// may not be good enough.
+	return ++SystemTick;
 }
 
 
