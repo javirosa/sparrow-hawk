@@ -120,7 +120,7 @@ public class SerialService
    private SerialService()
    {
       this.comPortName = null;
-      this.byteBang = false;
+      this.byteBang = true;	//make byte bang as default
    }
 
    /**

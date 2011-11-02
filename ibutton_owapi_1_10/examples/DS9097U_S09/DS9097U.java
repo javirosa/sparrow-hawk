@@ -18,6 +18,8 @@ import java.util.Map;
 import java.util.Random;
 import java.util.TooManyListenersException;
 
+import com.dalsemi.onewire.utils.ConvertCodec;
+
 
 public class DS9097U {
 	
@@ -277,14 +279,6 @@ public class DS9097U {
 		DS9097U test = new DS9097U();
 		
 		test.start();
-
-		
-//		try {
-//			Thread.sleep(60 * 1000);
-//		} catch (InterruptedException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
 		
 		for(int i = 0; i< 5; i++){
 			test.oneWirePresent();
@@ -295,6 +289,15 @@ public class DS9097U {
 				e.printStackTrace();
 			}
 		}
+		
+		try {
+			Thread.sleep(60 * 1000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		
 		test.stop();
 		

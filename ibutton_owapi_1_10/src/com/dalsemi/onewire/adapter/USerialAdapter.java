@@ -231,8 +231,9 @@ public class USerialAdapter
    /** Enable/disable debug messages                   */
    private static boolean doDebugMessages = true;
    
-   private boolean ignoreVerify = true;
-   private boolean ignoreSearch = true;
+   private boolean ignoreVerify = true;		//can ignore
+   private boolean ignoreSearch = false;	//cannot ignore
+   private boolean ignoreMasterReset = false;	//cannot ignore
 
    //--------
    //-------- Constructor
@@ -2246,7 +2247,7 @@ public class USerialAdapter
    private boolean search (OneWireState mState)
       throws OneWireIOException, OneWireException
    {
-	   //if(ignoreSearch) return false;
+	  if(ignoreSearch) return false;
 	   
       int reset_offset = 0;
 
@@ -2545,6 +2546,8 @@ public class USerialAdapter
    {
       if (doDebugMessages)
          System.out.println("DEBUG: uMasterReset");
+      
+      if(ignoreMasterReset) return;
 
       // try to aquire the port
       try

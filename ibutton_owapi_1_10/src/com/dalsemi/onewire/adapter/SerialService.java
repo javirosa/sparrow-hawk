@@ -42,7 +42,7 @@ import gnu.io.*;
 public class SerialService
    implements SerialPortEventListener
 {
-   private static final boolean DEBUG = false;
+   private static final boolean DEBUG = true;
    /** The serial port name of this object (e.g. COM1, /dev/ttyS0) */
    private final String comPortName;
    /** The serial port object for setting serial port parameters */
