@@ -14,14 +14,15 @@ APPNAME = humalog
 
 #################################################
 
-BUILD_TYPE = Win32
-#BUILD_TYPE = Linux
+#BUILD_TYPE = Win32
+BUILD_TYPE = Linux
 
 #################################################
 
-CC = gcc
-
-CXX = g++
+ifeq ($(BUILD_TYPE), Win32)
+	CC = gcc
+	CXX = g++
+endif
 
 #################################################
 
