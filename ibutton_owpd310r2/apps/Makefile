@@ -24,6 +24,34 @@ ifeq ($(BUILD_TYPE), Win32)
 	CXX = g++
 endif
 
+ifeq ($(BUILD_TYPE), S3C6410) 
+
+    ARCH			:= arm
+    CROSS_COMPILE	:= /usr/local/arm/arm-none-linux-gnueabi/bin/arm-none-linux-gnueabi-
+    
+    # Make variables (CC, etc...)
+    
+    AS		= $(CROSS_COMPILE)as
+    LD		= $(CROSS_COMPILE)ld
+    CC		= $(CROSS_COMPILE)gcc
+    CPP		= $(CC) -E
+    AR		= $(CROSS_COMPILE)ar
+    NM		= $(CROSS_COMPILE)nm
+    STRIP		= $(CROSS_COMPILE)strip
+    OBJCOPY		= $(CROSS_COMPILE)objcopy
+    OBJDUMP		= $(CROSS_COMPILE)objdump
+    AWK			= awk
+    GENKSYMS	= scripts/genksyms/genksyms
+    DEPMOD		= /sbin/depmod
+    KALLSYMS	= scripts/kallsyms
+    PERL		= perl
+    CHECK		= sparse
+    
+endif
+
+
+
+
 #################################################
 
 CFLAGS := -O2 -g -Wall -fmessage-length=0

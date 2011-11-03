@@ -176,18 +176,10 @@ static SMALLINT w1_gpio_read_bit(unsigned int pin)
 
 /// Initialize the IO pin for iButtons
 /// Must executed before other owXXX functions and called only once!
-void OWInit(unsigned int * ioTable, int count)
+void OWInit()
 {
-	int num = ( count > MAX_PORTNUM ) ? MAX_PORTNUM : count;
-
-	if ( ioTable )
-	{
-		int i ;
-		for ( i = 0 ; i< num; i++ )
-		{
-			IOTable[i] = ioTable[i];
-		}
-	}
+	IOTable[0] = 194; //GPQ0
+	IOTable[1] = 194; //GPQ0
 }
 
 //-----------------------------------------------------------------------------

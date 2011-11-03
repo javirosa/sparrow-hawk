@@ -9,9 +9,16 @@
 
 #################################################
 
-#CC = gcc
+#BUILD_TYPE = Win32
+#BUILD_TYPE = Linux
+BUILD_TYPE = S3C6410
 
-#CXX = g++
+#################################################
+
+ifeq ($(BUILD_TYPE), Win32)
+	CC = gcc
+	CXX = g++
+endif
 
 #################################################
 
@@ -28,20 +35,25 @@ BLANK = $(EMPTY) $(EMPTY)
 
 #################################################
 
-#BUILD_TYPE = Win32
-BUILD_TYPE = Linux
-
-#################################################
-
 COMMON_DIR   	= ./common
-USERIAL_DIR  	= ./lib/userial/shared
-WIN32IMPL_DIR   = ./lib/userial/link/Win32
-LINUXIMPL_DIR   = ./lib/userial/link/Linux
+
+USERIAL_SHARE_DIR  	= ./lib/userial/shared
+USERIAL_WIN32_DIR   = ./lib/userial/link/Win32
+USERIAL_LINUX_DIR   = ./lib/userial/link/Linux
+
+GENERAL_SHARE_DIR   = ./lib/general/shared
+GENERAL_S3C6410_DIR = ./lib/general/link/S3C6410
 
 ifeq ($(BUILD_TYPE), Win32)
-	SRCDIR = $(COMMON_DIR) $(USERIAL_DIR) $(WIN32IMPL_DIR)
-else
-	SRCDIR = $(COMMON_DIR) $(USERIAL_DIR) $(LINUXIMPL_DIR)
+	SRCDIR = $(COMMON_DIR) $(USERIAL_SHARE_DIR) $(USERIAL_WIN32_DIR)
+endif
+
+ifeq ($(BUILD_TYPE), Linux)
+	SRCDIR = $(COMMON_DIR) $(USERIAL_SHARE_DIR) $(USERIAL_LINUX_DIR)
+endif
+
+ifeq ($(BUILD_TYPE), S3C6410)
+	SRCDIR = $(COMMON_DIR) $(GENERAL_SHARE_DIR) $(GENERAL_S3C6410_DIR)
 endif
 
 # VPATH = $(SRCDIR)
@@ -52,14 +64,22 @@ endif
 #COMMON_SRC      = crcutil.c ioutil.c owerr.c ibsha33o.c
 #COMMON_SRC      = crcutil.c ioutil.c owerr.c ibsha33o.c temp10.c findtype.c thermo21.c
 COMMON_SRC      = crcutil.c ioutil.c owerr.c ibsha33o.c temp10.c findtype.c thermo21.c humutil.c mbee77.c mbscrx77.c pw77.c
-USERIAL_SRC     = ds2480ut.c owllu.c ownetu.c owsesu.c owtrnu.c
-WIN32IMPL_SRC   = win32lnk.c
-LINUXIMPL_SRC   = linuxlnk.c
+USERIAL_SHARE_SRC   = ds2480ut.c owllu.c ownetu.c owsesu.c owtrnu.c
+USERIAL_WIN32_SRC   = win32lnk.c
+USERIAL_LINUX_SRC   = linuxlnk.c
+GENERAL_SHARE_SRC   = ownet.c owtran.c
+GENERAL_S3C6410_SRC   = s3c6410lnk.c s3c6410ses.c
 
 ifeq ($(BUILD_TYPE), Win32)
-	SRCS = $(COMMON_SRC) $(USERIAL_SRC) $(WIN32IMPL_SRC)
-else
-	SRCS = $(COMMON_SRC) $(USERIAL_SRC) $(LINUXIMPL_SRC) 
+	SRCS = $(COMMON_SRC) $(USERIAL_SHARE_SRC) $(USERIAL_WIN32_SRC)
+endif
+
+ifeq ($(BUILD_TYPE), Linux)
+	SRCS = $(COMMON_SRC) $(USERIAL_SHARE_SRC) $(USERIAL_LINUX_SRC) 
+endif
+
+ifeq ($(BUILD_TYPE), S3C6410)
+	SRCS = $(COMMON_SRC) $(GENERAL_SHARE_SRC) $(GENERAL_S3C6410_SRC) 
 endif
 
 INCFLAG = $(foreach d, $(SRCDIR), $(join -I, $(d)))
@@ -71,19 +91,29 @@ OBJDIR = ./build
 DISTDIR = ./dist
 
 COMMON_OBJDIR    =  $(OBJDIR)/common
-USERIAL_OBJDIR   =  $(OBJDIR)/userial
-WIN32IMPL_OBJDIR =  $(OBJDIR)/win32impl
-LINUXIMPL_OBJDIR =  $(OBJDIR)/linuximpl
+USERIAL_SHARE_OBJDIR   =  $(OBJDIR)/userial_shared
+USERIAL_WIN32_OBJDIR =  $(OBJDIR)/userial_win32impl
+USERIAL_LINUX_OBJDIR =  $(OBJDIR)/userial_linuximpl
+GENERAL_SHARE_OBJDIR =  $(OBJDIR)/general_shared
+GENERAL_S3C6410_ORJDIR =  $(OBJDIR)/general_s3c6410
 
 COMMON_OBJ       =  $(foreach f, $(COMMON_SRC),  $(patsubst %.c, $(COMMON_OBJDIR)/%.o, $(f)))
-USERIAL_OBJ      =  $(foreach f, $(USERIAL_SRC), $(patsubst %.c, $(USERIAL_OBJDIR)/%.o, $(f)))
-WIN32IMPL_OBJ    =  $(foreach f, $(WIN32IMPL_SRC),  $(patsubst %.c, $(WIN32IMPL_OBJDIR)/%.o, $(f)))
-LINUXIMPL_OBJ    =  $(foreach f, $(LINUXIMPL_SRC),  $(patsubst %.c, $(LINUXIMPL_OBJDIR)/%.o, $(f)))
+USERIAL_SHARE_OBJ    =  $(foreach f, $(USERIAL_SHARE_SRC), $(patsubst %.c, $(USERIAL_SHARE_OBJDIR)/%.o, $(f)))
+USERIAL_WIN32_OBJ    =  $(foreach f, $(USERIAL_WIN32_SRC),  $(patsubst %.c, $(USERIAL_WIN32_OBJDIR)/%.o, $(f)))
+USERIAL_LINUX_OBJ    =  $(foreach f, $(USERIAL_LINUX_SRC),  $(patsubst %.c, $(USERIAL_LINUX_OBJDIR)/%.o, $(f)))
+GENERAL_SHARE_OBJ    =  $(foreach f, $(GENERAL_SHARE_SRC),  $(patsubst %.c, $(GENERAL_SHARE_OBJDIR)/%.o, $(f)))
+GENERAL_S3C6410_OBJ    =  $(foreach f, $(GENERAL_S3C6410_SRC),  $(patsubst %.c, $(GENERAL_S3C6410_OBJDIR)/%.o, $(f)))
 
 ifeq ($(BUILD_TYPE), Win32)
-	OBJS = $(COMMON_OBJ) $(USERIAL_OBJ) $(WIN32IMPL_OBJ)
-else
-	OBJS = $(COMMON_OBJ) $(USERIAL_OBJ) $(LINUXIMPL_OBJ)
+	OBJS = $(COMMON_OBJ) $(USERIAL_SHARE_OBJ) $(USERIAL_WIN32_OBJ)
+endif
+
+ifeq ($(BUILD_TYPE), Linux)
+	OBJS = $(COMMON_OBJ) $(USERIAL_SHARE_OBJ) $(USERIAL_LINUX_OBJ)
+endif
+
+ifeq ($(BUILD_TYPE), S3C6410)
+	OBJS = $(COMMON_OBJ) $(GENERAL_SHARE_OBJ) $(GENERAL_S3C641_OBJ)
 endif
 
 LIBS =
@@ -91,9 +121,15 @@ LIBS =
 #################################################
 
 ifeq ($(BUILD_TYPE), Win32)
-	TARGET = $(DISTDIR)/ibutton_win32.a
-else
-	TARGET = $(DISTDIR)/ibutton_linux.a
+	TARGET = $(DISTDIR)/ibutton_userial_win32.a
+endif
+
+ifeq ($(BUILD_TYPE), Linux)
+	TARGET = $(DISTDIR)/ibutton_userial_linux.a
+endif
+
+ifeq ($(BUILD_TYPE), S3C6410)
+	TARGET = $(DISTDIR)/ibutton_general_s3c6410.a
 endif
 
 $(TARGET): $(OBJS)
@@ -103,22 +139,22 @@ $(TARGET): $(OBJS)
 # $(COMMON_OBJDIR)/%.o : %.c
 # 	$(CC) -c   $(COMMON_DIR)/$<     -o $@ $(INCFLAG)
 #
-# $(USERIAL_OBJDIR)/%.o : %.c
-# 	$(CC) -c   $(USERIAL_DIR)/$<    -o $@ $(INCFLAG)
+# $(USERIAL_SHARE_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(USERIAL_SHARE_DIR)/$<    -o $@ $(INCFLAG)
 #
-# $(WIN32IMPL_OBJDIR)/%.o : %.c
-# 	$(CC) -c   $(WIN32IMPL_DIR)/$<  -o $@ $(INCFLAG)
+# $(USERIAL_WIN32_OBJDIR)/%.o : %.c
+# 	$(CC) -c   $(USERIAL_WIN32_DIR)/$<  -o $@ $(INCFLAG)
 
 
 # $(OBJDIR)/ioutil.o:
 # ifeq ($(findstring ioutil.c, $(COMMON_SRC)), ioutil.c)
 # 	$(CC) -c $(COMMON_DIR)/ioutil.c -o $@ $(INCFLAG)
 # endif
-# ifeq ($(findstring ioutil.c, $(USERIAL_SRC)),ioutil.c)
-# 	$(CC) -c $(USERIAL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# ifeq ($(findstring ioutil.c, $(USERIAL_SHARE_SRC)),ioutil.c)
+# 	$(CC) -c $(USERIAL_SHARE_DIR)/ioutil.c -o $@ $(INCFLAG)
 # endif
-# ifeq ($(findstring ioutil.c, $(WIN32IMPL_SRC)), ioutil.c)
-# 	$(CC) -c $(WIN32IMPL_DIR)/ioutil.c -o $@ $(INCFLAG)
+# ifeq ($(findstring ioutil.c, $(USERIAL_WIN32_SRC)), ioutil.c)
+# 	$(CC) -c $(USERIAL_WIN32_DIR)/ioutil.c -o $@ $(INCFLAG)
 # endif
 # ifeq ($(findstring ioutil.c, $(APP_SRC)), ioutil.c)
 # 	$(CC) -c $(APP_DIR)/ioutil.c -o $@ $(INCFLAG)
@@ -138,12 +174,14 @@ $(COMMON_OBJDIR)/owerr.o :
 $(COMMON_OBJDIR)/ibsha33o.o :
 	$(CC) -c $(COMMON_DIR)/ibsha33o.c	-o $@ $(INCFLAG)
 	
+	
 $(COMMON_OBJDIR)/temp10.o :
 	$(CC) -c $(COMMON_DIR)/temp10.c		-o $@ $(INCFLAG)
 $(COMMON_OBJDIR)/findtype.o :
 	$(CC) -c $(COMMON_DIR)/findtype.c	-o $@ $(INCFLAG)
 $(COMMON_OBJDIR)/thermo21.o :
 	$(CC) -c $(COMMON_DIR)/thermo21.c	-o $@ $(INCFLAG)
+	
 	
 $(COMMON_OBJDIR)/humutil.o :
 	$(CC) -c $(COMMON_DIR)/humutil.c		-o $@ $(INCFLAG)
@@ -154,23 +192,36 @@ $(COMMON_OBJDIR)/mbscrx77.o :
 $(COMMON_OBJDIR)/pw77.o :
 	$(CC) -c $(COMMON_DIR)/pw77.c	-o $@ $(INCFLAG)
 	
+	
+$(USERIAL_SHARE_OBJDIR)/ds2480ut.o :
+	$(CC) -c $(USERIAL_SHARE_DIR)/ds2480ut.c	-o $@ $(INCFLAG)
+$(USERIAL_SHARE_OBJDIR)/owllu.o :
+	$(CC) -c $(USERIAL_SHARE_DIR)/owllu.c		-o $@ $(INCFLAG)
+$(USERIAL_SHARE_OBJDIR)/ownetu.o :
+	$(CC) -c $(USERIAL_SHARE_DIR)/ownetu.c	-o $@ $(INCFLAG)
+$(USERIAL_SHARE_OBJDIR)/owsesu.o :
+	$(CC) -c $(USERIAL_SHARE_DIR)/owsesu.c	-o $@ $(INCFLAG)
+$(USERIAL_SHARE_OBJDIR)/owtrnu.o :
+	$(CC) -c $(USERIAL_SHARE_DIR)/owtrnu.c	-o $@ $(INCFLAG)
 
-$(USERIAL_OBJDIR)/ds2480ut.o :
-	$(CC) -c $(USERIAL_DIR)/ds2480ut.c	-o $@ $(INCFLAG)
-$(USERIAL_OBJDIR)/owllu.o :
-	$(CC) -c $(USERIAL_DIR)/owllu.c		-o $@ $(INCFLAG)
-$(USERIAL_OBJDIR)/ownetu.o :
-	$(CC) -c $(USERIAL_DIR)/ownetu.c	-o $@ $(INCFLAG)
-$(USERIAL_OBJDIR)/owsesu.o :
-	$(CC) -c $(USERIAL_DIR)/owsesu.c	-o $@ $(INCFLAG)
-$(USERIAL_OBJDIR)/owtrnu.o :
-	$(CC) -c $(USERIAL_DIR)/owtrnu.c	-o $@ $(INCFLAG)
 
-$(WIN32IMPL_OBJDIR)/win32lnk.o :
-	$(CC) -c $(WIN32IMPL_DIR)/win32lnk.c	-o $@ $(INCFLAG)
+$(USERIAL_WIN32_OBJDIR)/win32lnk.o :
+	$(CC) -c $(USERIAL_WIN32_DIR)/win32lnk.c	-o $@ $(INCFLAG)
+$(USERIAL_LINUX_OBJDIR)/linuxlnk.o :
+	$(CC) -c $(USERIAL_LINUX_DIR)/linuxlnk.c 	-o $@ $(INCFLAG)
+	
 
-$(LINUXIMPL_OBJDIR)/linuxlnk.o :
-	$(CC) -c $(LINUXIMPL_DIR)/linuxlnk.c 	-o $@ $(INCFLAG)
+$(GENERAL_SHARE_OBJDIR)/ownet.o :
+	$(CC) -c $(GENERAL_SHARE_DIR)/ownet.c	-o $@ $(INCFLAG)
+$(GENERAL_SHARE_OBJDIR)/owtran.o :
+	$(CC) -c $(GENERAL_SHARE_DIR)/owtran.c	-o $@ $(INCFLAG)
+	
+	
+$(GENERAL_S3C6410_OBJDIR)/s3c6410lnk.o :
+	$(CC) -c $(GENERAL_S3C6410_DIR)/s3c6410lnk.c	-o $@ $(INCFLAG)
+$(GENERAL_S3C6410_OBJDIR)/s3c6410ses.o :
+	$(CC) -c $(GENERAL_S3C6410_DIR)/s3c6410ses.c	-o $@ $(INCFLAG)
+
 
 #################################################
 
