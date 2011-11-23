@@ -1,6 +1,7 @@
 /*
  * w1_netlink.h
  *
+ *
  * Copyright (c) 2003 Evgeniy Polyakov <johnpol@2ka.mipt.ru>
  *
  *
@@ -24,8 +25,6 @@
 
 #include <asm/types.h>
 #include <linux/connector.h>
-
-#include "w1.h"
 
 enum w1_netlink_message_types {
 	W1_SLAVE_ADD = 0,
@@ -71,6 +70,8 @@ struct w1_netlink_cmd
 };
 
 #ifdef __KERNEL__
+
+#include "w1.h"
 
 void w1_netlink_send(struct w1_master *, struct w1_netlink_msg *);
 int w1_init_netlink(void);
