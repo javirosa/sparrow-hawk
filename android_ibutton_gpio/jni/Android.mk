@@ -12,6 +12,7 @@ LOCAL_MODULE:= librxtxSerial
 LOCAL_SRC_FILES := \
 	fuserImp.c \
 	SerialImp.c
+	
 
 LOCAL_C_INCLUDES += \
 	dalvik/libnativehelper/include/nativehelper \

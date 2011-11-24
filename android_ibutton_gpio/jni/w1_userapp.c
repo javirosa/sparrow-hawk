@@ -20,7 +20,7 @@
 
 #define MAX_MSGSIZE 256
 
-#define MIN_MSGSIZE (sizeof(struct cn_msg) + sizeof(struct w1_netlink_msg) + sizeof(struct w1_netlink_cmd))
+#define MIN_MSGSIZE (sizeof(struct nlmsghdr) + sizeof(struct cn_msg) + sizeof(struct w1_netlink_msg) + sizeof(struct w1_netlink_cmd))
 
 
 
@@ -42,8 +42,8 @@ int send_w1_msg(cn_msg * cmsg)
 	struct w1_netlink_msg * msg = (struct w1_netlink_msg *)(cmsg + 1);
 	struct w1_netlink_cmd * cmd = (struct w1_netlink_cmd *)(msg + 1);
 
-	__u32 realSize = sizeof(struct cn_msg) + sizeof(struct w1_netlink_msg)
-			+ sizeof(struct w1_netlink_cmd) + cmd->len;
+	__u32 realSize = sizeof(struct nlmsghdr) + sizeof(struct cn_msg)
+			+ sizeof(struct w1_netlink_msg) + sizeof(struct w1_netlink_cmd) + cmd->len;
 
 	memset(nlMsgSend, 0, sizeof(NLMSG_SPACE(MAX_MSGSIZE)));
 	memset(&iovSend, 0, sizeof(struct iovec));

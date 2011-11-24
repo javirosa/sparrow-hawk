@@ -1,5 +1,8 @@
 /*
- * w1_netlink.h
+ * w1_netlink_userspace.h
+ *
+ * Original filename: kernel_src_2.6.29/drivers/w1/w1_netlink.h
+ * Shipped by Deven Fan: deven.fan@gmail.com
  *
  *
  * Copyright (c) 2003 Evgeniy Polyakov <johnpol@2ka.mipt.ru>
@@ -20,11 +23,32 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
  */
 
-#ifndef __W1_NETLINK_H
-#define __W1_NETLINK_H
+#ifndef __W1_NETLINK_USERSPACE_H
+#define __W1_NETLINK_USERSPACE_H
 
-#include <asm/types.h>
-#include <linux/connector.h>
+#ifdef __KERNEL__
+	#include <asm/types.h>
+#endif
+
+#include <linux/netlink.h>		//it will include <linux/socket.h>
+#include <linux/connector.h>	//it will include <linux/types.h>
+
+#ifndef	W1_GROUP
+#define W1_GROUP  	CN_W1_IDX
+#endif
+
+#ifndef  NETLINK_DROP_MEMBERSHIP
+#define  NETLINK_DROP_MEMBERSHIP 0
+#endif
+
+#ifndef  NETLINK_ADD_MEMBERSHIP
+#define  NETLINK_ADD_MEMBERSHIP 1
+#endif
+
+#ifndef  SOL_NETLINK
+#define  SOL_NETLINK 270
+#endif
+
 
 enum w1_netlink_message_types {
 	W1_SLAVE_ADD = 0,
@@ -69,13 +93,18 @@ struct w1_netlink_cmd
 	__u8				data[0];
 };
 
+
 #ifdef __KERNEL__
 
-#include "w1.h"
+	#include "w1.h"
 
-void w1_netlink_send(struct w1_master *, struct w1_netlink_msg *);
-int w1_init_netlink(void);
-void w1_fini_netlink(void);
+	void w1_netlink_send(struct w1_master *, struct w1_netlink_msg *);
 
-#endif /* __KERNEL__ */
-#endif /* __W1_NETLINK_H */
+	int w1_init_netlink(void);
+
+	void w1_fini_netlink(void);
+
+#endif
+
+
+#endif /* __W1_NETLINK_USERSPACE_H */

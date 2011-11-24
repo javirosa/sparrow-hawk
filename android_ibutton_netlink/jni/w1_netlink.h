@@ -24,7 +24,7 @@
 #define __W1_NETLINK_H
 
 #include <asm/types.h>
-#include <linux/connector.h>
+#include <linux/connector.h>	//we need to use cn_msg inside
 
 enum w1_netlink_message_types {
 	W1_SLAVE_ADD = 0,
